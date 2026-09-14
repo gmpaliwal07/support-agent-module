@@ -2,7 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-.env
 data/raw/
 .ipynb_checkpoints/
 *.egg-info/
@@ -19,5 +18,10 @@ data/processed/faiss_metadata.csv
 data/processed/draft_labeled.csv
 data/processed/needs_manual_label.csv
 data/processed/keyword_candidates.csv
-data/processed/account_verification_candidates.csv.vscode/
 data/processed/archive/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
+config.bat
+node_modules

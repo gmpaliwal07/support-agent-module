@@ -12,5 +12,3 @@ ollama
 fastapi
 uvicorn
 pydantic
-jupyter
-tqdm

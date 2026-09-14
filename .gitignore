@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+data/raw/
+.ipynb_checkpoints/
+*.egg-info/
+.DS_Store
+
+# Generated embedding cache
+data/processed/embed_cache/
+
+# Full retrieval index; rebuildable and exceeds GitHub's 100MB limit
+data/processed/faiss_index.bin
+data/processed/faiss_metadata.csv
+
+# Superseded labeling files kept locally for audit
+data/processed/draft_labeled.csv
+data/processed/needs_manual_label.csv
+data/processed/keyword_candidates.csv
+data/processed/account_verification_candidates.csv.vscode/
+data/processed/archive/

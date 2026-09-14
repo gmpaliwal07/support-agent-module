@@ -1,0 +1,23 @@
+{
+  "embedding_model": "all-MiniLM-L6-v2",
+  "intents": [
+    "account_phone_verification",
+    "app_booking_technical",
+    "driver_document_onboarding",
+    "driver_safety_misconduct",
+    "driver_vehicle_condition",
+    "eats_delivery_issue",
+    "eats_refund_request",
+    "general_complaint",
+    "lost_item",
+    "payment_method_issue",
+    "promo_ridepass_issue",
+    "rating_dispute",
+    "ride_cancellation_dispute",
+    "ride_fare_overcharge",
+    "tip_issue",
+    "uberpool_routing_issue"
+  ],
+  "n_training_examples": 17550,
+  "trained_at": "2026-09-12T17:08:16.356263+00:00"
+}

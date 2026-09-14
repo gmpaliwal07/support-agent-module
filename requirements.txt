@@ -1,0 +1,16 @@
+pandas
+numpy
+scikit-learn
+sentence-transformers
+hdbscan
+umap-learn
+matplotlib
+faiss-cpu
+joblib
+python-dotenv
+ollama
+fastapi
+uvicorn
+pydantic
+jupyter
+tqdm

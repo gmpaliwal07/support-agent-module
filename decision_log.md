@@ -1,0 +1,24 @@
+# Decision Log
+
+1. **Brand:** Selected `Uber_Support` because it has 56,270 outbound tweets, giving enough data for a meaningful taxonomy and evaluation set.
+2. **Scope:** Included both Uber Rides and Uber Eats, keeping them as separate intents. Excluding Eats would lose useful data, while merging them would mix different resolution patterns.
+3. **Thread reconstruction:** Used the earliest reachable ancestor from `in_response_to_tweet_id` as the thread root. Threads are sorted by `created_at`, since tweet IDs cannot be reliably sorted as strings.
+4. **Uber threads:** A thread is considered Uber-related if `Uber_Support` appears anywhere in the reply chain.
+5. **Customer complaints:** `uber_roots.csv` excludes 87 threads started by Uber, since they are not customer complaints.
+6. **Taxonomy:** Built the intent taxonomy using `all-MiniLM-L6-v2` embeddings, UMAP, and HDBSCAN rather than defining intents manually. A second clustering pass was used on the oversized mixed cluster, producing 7 additional intents. Similar clusters were then merged.
+7. **HDBSCAN tuning:** Selected `mcs=200, ms=5, eps=0.2` through a parameter sweep based on the trade-off between noise and cluster count. Over-fragmented and overly-collapsed results were rejected.
+8. **Noise:** Noise points were manually sampled and reviewed. They mainly represented wording variation within existing intents, so they were left for downstream classification instead of being manually labeled.
+9. **Final taxonomy:** Locked at 15 intents covering Rides, Eats, account/payment/app issues, and the safety-critical `driver_safety_misconduct` intent. (Later expanded to 16 — see #18.)
+10. **Labeling:** Labeling was semi-automated. About 9,515 rows came from reviewed clusters, while ~890 additional candidates were recovered using keyword matching and manually checked. Five false positives were removed and four labels were corrected.
+11. **Class imbalance:** The natural imbalance (167–1,909 examples per intent) was preserved rather than artificially balancing the dataset. Any imbalance handling will be done during model training if needed.
+12. **Golden eval set:** Created a 207-row stratified eval set with 8–30 examples per intent. These rows were removed from training to prevent overlap.
+13. **Embedding models:** Used `all-MiniLM-L6-v2` for classification and `BAAI/bge-base-en-v1.5` for retrieval. The split was intentional because each model serves a different purpose.
+14. **Confidence threshold:** Validated the `0.85` escalation threshold through a sweep of 8 thresholds. At 0.85, accuracy was 99.2% on the golden set and 88.2% on the hard set, showing confidence is a useful correctness signal.
+15. **Escalation:** Escalation checks, in order: safety-critical intent, guardrail flags, low classifier confidence, and missing grounded historical resolution. The high escalation rate observed on a 40-example sample was expected because very few historical cases had usable resolutions.
+16. **Generation guardrails:** Added after finding a real data-leak issue where the LLM copied a URL from another customer's case. Retrieved context now strips URLs/account IDs, and generated replies are scanned for URLs, contact details, and fabricated commitments. Any flagged response is escalated.
+17. **LLM judge:** Compared LLM-judge scores against human ratings on 15 replies. Agreement was 88.3% within one point and 55.0% exact. Grounding was the main disagreement area, so deterministic guardrails remain the authority for detecting fabricated information.
+18. **`rating_dispute` split:** Manual review showed that `rating_dispute` mixed star-rating and tipping complaints. 140 training rows and 2 eval rows containing tipping issues were moved to a new `tip_issue` intent. Both datasets were updated together to avoid train/eval label mismatches.
+19. **Classifier convergence:** Tested `max_iter` values of 100, 500, 1000, and 2000. The classifier converged cleanly at all values, so 1000 was kept as safe headroom.
+20. **Confidence calibration:** Calibration checks showed the model is slightly underconfident: actual accuracy was consistently higher than predicted confidence. This is safer for escalation because it tends to cause more review rather than missed errors. Formal calibration was therefore deferred.
+21. **Retrieval:** Evaluated retrieval using 7 queries across 5+ intents. Mean precision@3 was 0.95 (28/30 relevant results). Approximate recall@3 was 0.35, reflecting the deliberate choice of `RETRIEVAL_K=3` to prioritize precise results for LLM grounding.
+22. **Hard eval set expansion:** Expanded the hard eval set from 100 to 200 rows for more reliable per-intent statistics. New rows were LLM-drafted and spot-checked on a 20-row sample (18/20 correct, 2 errors fixed manually). Accuracy on the expanded set was 62.5% (up from 59.0%), narrowing the gap to the golden set from 29.4 to 25.9 points.

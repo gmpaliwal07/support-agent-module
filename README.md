@@ -166,3 +166,5 @@ uber-support-agent/
   `rating_dispute` during a manual audit (decision log #18).
 - All non-obvious decisions, including several corrected mistakes, are
   logged with reasoning in `decision_log.md`.
+
+  [Full Report](report/report.md) | [Decision Log](decision_log.md) | [Failure Analysis](report/failure_analysis.md)
